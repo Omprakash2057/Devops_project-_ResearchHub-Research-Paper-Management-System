@@ -1,0 +1,69 @@
+<% locals.activePage = 'users' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>User Management</h1>
+    <p><%= users.length %> registered user(s)</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Papers</th>
+          <th>Last Login</th>
+          <th>Registered</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((u, i) => { %>
+          <tr>
+            <td class="text-muted text-sm"><%= i + 1 %></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div style="width:34px;height:34px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;">
+                  <%= u.name.charAt(0).toUpperCase() %>
+                </div>
+                <span style="font-weight:500;"><%= u.name %></span>
+                <% if (String(u._id) === session.userId) { %>
+                  <span class="badge badge-info" style="font-size:10px;">You</span>
+                <% } %>
+              </div>
+            </td>
+            <td class="text-sm"><%= u.email %></td>
+            <td>
+              <span class="badge <%= u.role === 'admin' ? 'badge-danger' : 'badge-success' %>">
+                <%= u.role %>
+              </span>
+            </td>
+            <td class="text-sm"><%= u.papersUploaded || 0 %></td>
+            <td class="text-xs text-muted">
+              <%= u.lastLogin ? new Date(u.lastLogin).toLocaleString() : 'Never' %>
+            </td>
+            <td class="text-xs text-muted"><%= new Date(u.createdAt).toLocaleDateString() %></td>
+            <td>
+              <div class="flex gap-2">
+                <a href="/users/<%= u._id %>/edit" class="btn btn-sm btn-warning">Role</a>
+                <% if (String(u._id) !== session.userId) { %>
+                  <form id="del-user-<%= u._id %>" action="/users/<%= u._id %>?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('del-user-<%= u._id %>')">Delete</button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../layout-bottom') %>

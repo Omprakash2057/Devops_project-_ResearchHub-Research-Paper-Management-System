@@ -1,0 +1,41 @@
+<% locals.activePage = 'users' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Edit User Role</h1>
+    <p>Change role for <%= editUser.name %></p>
+  </div>
+  <a href="/users" class="btn btn-secondary">← Back to Users</a>
+</div>
+
+<div class="card" style="max-width:460px;">
+  <div class="card-body">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px;background:#f8fafc;border-radius:8px;margin-bottom:20px;">
+      <div style="width:48px;height:48px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;">
+        <%= editUser.name.charAt(0).toUpperCase() %>
+      </div>
+      <div>
+        <div style="font-weight:600;"><%= editUser.name %></div>
+        <div style="font-size:13px;color:#64748b;"><%= editUser.email %></div>
+      </div>
+    </div>
+
+    <form action="/users/<%= editUser._id %>?_method=PUT" method="POST">
+      <div class="form-group">
+        <label class="form-label">Role *</label>
+        <select name="role" class="form-control" required>
+          <option value="user"  <%= editUser.role === 'user'  ? 'selected' : '' %>>User — Standard access</option>
+          <option value="admin" <%= editUser.role === 'admin' ? 'selected' : '' %>>Admin — Full access</option>
+        </select>
+        <div class="form-hint">Admin users can manage all papers and users.</div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">💾 Update Role</button>
+        <a href="/users" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../layout-bottom') %>

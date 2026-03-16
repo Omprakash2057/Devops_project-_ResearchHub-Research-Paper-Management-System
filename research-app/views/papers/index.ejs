@@ -1,0 +1,89 @@
+<% locals.activePage = 'papers' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Research Papers</h1>
+    <p><%= papers.length %> paper(s) found</p>
+  </div>
+  <a href="/papers/create" class="btn btn-primary">⬆️ Upload Paper</a>
+</div>
+
+<!-- Search & Filter -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-body">
+    <form method="GET" action="/papers" class="search-bar">
+      <input type="text" name="search" class="form-control" placeholder="🔍 Search by title, author, abstract..." value="<%= search || '' %>" />
+      <select name="category" class="form-control" style="max-width:200px;">
+        <option value="">All Categories</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat %>" <%= category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+      </select>
+      <input type="number" name="year" class="form-control" style="max-width:110px;" placeholder="Year" value="<%= year || '' %>" min="1900" max="2030" />
+      <select name="sort" class="form-control" style="max-width:150px;">
+        <option value="" <%= !sort ? 'selected' : '' %>>Newest First</option>
+        <option value="title"  <%= sort === 'title'  ? 'selected' : '' %>>Title A–Z</option>
+        <option value="year"   <%= sort === 'year'   ? 'selected' : '' %>>Year Desc</option>
+        <option value="author" <%= sort === 'author' ? 'selected' : '' %>>Author A–Z</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/papers" class="btn btn-secondary">Reset</a>
+    </form>
+  </div>
+</div>
+
+<!-- Papers Table -->
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>Year</th>
+          <th>Uploaded By</th>
+          <th>Size</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (papers.length === 0) { %>
+          <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:32px;">No papers found. <a href="/papers/create">Upload one?</a></td></tr>
+        <% } %>
+        <% papers.forEach((paper, i) => { %>
+          <tr>
+            <td class="text-muted text-sm"><%= i + 1 %></td>
+            <td style="max-width:220px;">
+              <a href="/papers/<%= paper._id %>" style="font-weight:500;color:#1e293b;" title="<%= paper.title %>">
+                <%= paper.title.length > 55 ? paper.title.substring(0,55) + '…' : paper.title %>
+              </a>
+            </td>
+            <td class="text-sm"><%= paper.author %></td>
+            <td><span class="badge badge-primary"><%= paper.category %></span></td>
+            <td class="text-sm"><%= paper.year %></td>
+            <td class="text-sm text-muted"><%= paper.uploadedBy ? paper.uploadedBy.name : '—' %></td>
+            <td class="text-xs text-muted"><%= paper.fileSize ? (paper.fileSize/1024).toFixed(0) + ' KB' : '—' %></td>
+            <td class="text-xs text-muted"><%= new Date(paper.createdAt).toLocaleDateString() %></td>
+            <td>
+              <div class="flex gap-2">
+                <a href="/papers/<%= paper._id %>" class="btn btn-sm btn-outline">View</a>
+                <% if (String(paper.uploadedBy && paper.uploadedBy._id) === session.userId || session.role === 'admin') { %>
+                  <a href="/papers/<%= paper._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
+                  <form id="del-<%= paper._id %>" action="/papers/<%= paper._id %>?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('del-<%= paper._id %>')">Del</button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../layout-bottom') %>

@@ -1,0 +1,68 @@
+<% locals.activePage = 'papers' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1 style="font-size:18px;max-width:700px;"><%= paper.title %></h1>
+    <div class="paper-meta mt-1">
+      <span>✍️ <%= paper.author %></span>
+      <span>📅 <%= paper.year %></span>
+      <span><span class="badge badge-primary"><%= paper.category %></span></span>
+      <span>👤 <%= paper.uploadedBy ? paper.uploadedBy.name : '—' %></span>
+      <span class="text-xs text-muted">Uploaded <%= new Date(paper.createdAt).toLocaleDateString() %></span>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <a href="/papers" class="btn btn-secondary">← Back</a>
+    <% if (String(paper.uploadedBy && paper.uploadedBy._id) === session.userId || session.role === 'admin') { %>
+      <a href="/papers/<%= paper._id %>/edit" class="btn btn-warning">✏️ Edit</a>
+      <form id="del-<%= paper._id %>" action="/papers/<%= paper._id %>?_method=DELETE" method="POST" style="display:inline;">
+        <button type="button" class="btn btn-danger" onclick="confirmDelete('del-<%= paper._id %>')">🗑️ Delete</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;">
+
+  <!-- PDF Preview -->
+  <div class="card">
+    <div class="card-header"><h3>📄 PDF Preview</h3></div>
+    <div class="card-body" style="padding:12px;">
+      <iframe src="/uploads/<%= paper.pdfFile %>" class="pdf-preview" title="<%= paper.title %>">
+        <p>PDF preview not supported. <a href="/uploads/<%= paper.pdfFile %>" target="_blank">Download PDF</a></p>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- Sidebar Details -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-header"><h3>📋 Abstract</h3></div>
+      <div class="card-body">
+        <p style="font-size:14px;line-height:1.75;color:#374151;"><%= paper.abstract %></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>ℹ️ Details</h3></div>
+      <div class="card-body">
+        <table style="font-size:13px;width:100%;">
+          <tr><td style="color:#64748b;padding:5px 0;">Title</td><td style="padding:5px 0;font-weight:500;"><%= paper.title %></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">Author</td><td style="padding:5px 0;"><%= paper.author %></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">Year</td><td style="padding:5px 0;"><%= paper.year %></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">Category</td><td style="padding:5px 0;"><span class="badge badge-primary"><%= paper.category %></span></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">File Size</td><td style="padding:5px 0;"><%= paper.fileSize ? (paper.fileSize/1024).toFixed(1) + ' KB' : '—' %></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">Uploaded By</td><td style="padding:5px 0;"><%= paper.uploadedBy ? paper.uploadedBy.name : '—' %></td></tr>
+          <tr><td style="color:#64748b;padding:5px 0;">Upload Date</td><td style="padding:5px 0;"><%= new Date(paper.createdAt).toLocaleDateString() %></td></tr>
+        </table>
+        <div style="margin-top:14px;">
+          <a href="/uploads/<%= paper.pdfFile %>" target="_blank" class="btn btn-primary w-full" style="justify-content:center;">⬇️ Download PDF</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%- include('../layout-bottom') %>

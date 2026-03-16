@@ -1,0 +1,157 @@
+<% locals.activePage = 'dashboard' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Welcome back, <%= session.userName %>! Here's what's happening.</p>
+  </div>
+  <a href="/papers/create" class="btn btn-primary">⬆️ Upload Paper</a>
+</div>
+
+<!-- Stat Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon purple">📄</div>
+    <div class="stat-info">
+      <div class="stat-value"><%= totalPapers %></div>
+      <div class="stat-label">Total Papers</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue">👥</div>
+    <div class="stat-info">
+      <div class="stat-value"><%= totalUsers %></div>
+      <div class="stat-label">Total Users</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">🕐</div>
+    <div class="stat-info">
+      <div class="stat-value"><%= recentUploads %></div>
+      <div class="stat-label">Recent Uploads (30d)</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon amber">💾</div>
+    <div class="stat-info">
+      <div class="stat-value"><%= storageUsedMB %> MB</div>
+      <div class="stat-label">Storage Used</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-row">
+  <div class="card">
+    <div class="card-header"><h3>📊 Papers Uploaded per Month</h3></div>
+    <div class="card-body">
+      <div style="position:relative;height:240px;">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>🗂️ Papers by Category</h3></div>
+    <div class="card-body">
+      <div style="position:relative;height:240px;">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Papers -->
+<div class="card">
+  <div class="card-header">
+    <h3>🕐 Recent Uploads</h3>
+    <a href="/papers" class="btn btn-sm btn-secondary">View All</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>Year</th>
+          <th>Uploaded By</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (recentPapers.length === 0) { %>
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">No papers uploaded yet.</td></tr>
+        <% } %>
+        <% recentPapers.forEach(paper => { %>
+          <tr>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">
+              <%= paper.title %>
+            </td>
+            <td><%= paper.author %></td>
+            <td><span class="badge badge-primary"><%= paper.category %></span></td>
+            <td><%= paper.year %></td>
+            <td><%= paper.uploadedBy ? paper.uploadedBy.name : '—' %></td>
+            <td class="text-sm text-muted"><%= new Date(paper.createdAt).toLocaleDateString() %></td>
+            <td><a href="/papers/<%= paper._id %>" class="btn btn-sm btn-outline">View</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: <%- monthLabels %>,
+    datasets: [{
+      label: 'Papers',
+      data: <%- monthlyData %>,
+      backgroundColor: '#4f46e5',
+      borderRadius: 6,
+      barThickness: 32
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+      x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+    }
+  }
+});
+
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+const catLabels = <%- categoryLabels %>;
+const catData   = <%- categoryData %>;
+const colors = ['#4f46e5','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#64748b'];
+new Chart(pieCtx, {
+  type: 'doughnut',
+  data: {
+    labels: catLabels,
+    datasets: [{
+      data: catData,
+      backgroundColor: colors.slice(0, catData.length),
+      borderWidth: 2,
+      borderColor: '#fff',
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'right', labels: { font: { size: 11 }, boxWidth: 12, padding: 12 } }
+    }
+  }
+});
+</script>
+
+<%- include('../layout-bottom') %>

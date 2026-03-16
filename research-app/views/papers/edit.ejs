@@ -1,0 +1,59 @@
+<% locals.activePage = 'papers' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Edit Paper</h1>
+    <p>Update the metadata for this research paper</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/papers/<%= paper._id %>" class="btn btn-secondary">← Back</a>
+  </div>
+</div>
+
+<div class="card" style="max-width:760px;">
+  <div class="card-body">
+    <form action="/papers/<%= paper._id %>?_method=PUT" method="POST">
+      <div class="form-group">
+        <label class="form-label">Paper Title *</label>
+        <input type="text" name="title" class="form-control" value="<%= paper.title %>" required />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Author(s) *</label>
+          <input type="text" name="author" class="form-control" value="<%= paper.author %>" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Publication Year *</label>
+          <input type="number" name="year" class="form-control" value="<%= paper.year %>" min="1900" max="2030" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select name="category" class="form-control" required>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat %>" <%= paper.category === cat ? 'selected' : '' %>><%= cat %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Abstract *</label>
+        <textarea name="abstract" class="form-control" rows="6" required><%= paper.abstract %></textarea>
+      </div>
+
+      <div class="alert alert-warning" style="font-size:13px;">
+        ⚠️ PDF file cannot be changed after upload. To replace, delete this paper and upload a new one.
+      </div>
+
+      <div class="flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Save Changes</button>
+        <a href="/papers/<%= paper._id %>" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../layout-bottom') %>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> — ResearchHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">R</div>
+      <span>ResearchHub</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a href="/papers" class="<%= locals.activePage === 'papers' ? 'active' : '' %>">
+        <span class="nav-icon">📄</span> Research Papers
+      </a>
+      <a href="/papers/create" class="<%= locals.activePage === 'upload' ? 'active' : '' %>">
+        <span class="nav-icon">⬆️</span> Upload Paper
+      </a>
+
+      <% if (session.role === 'admin') { %>
+      <div class="nav-section-label">Admin</div>
+      <a href="/users" class="<%= locals.activePage === 'users' ? 'active' : '' %>">
+        <span class="nav-icon">👥</span> User Management
+      </a>
+      <% } %>
+
+      <div class="nav-section-label">Account</div>
+      <a href="/profile" class="<%= locals.activePage === 'profile' ? 'active' : '' %>">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="/auth/logout">
+        <span>🚪</span> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <button onclick="toggleSidebar()" style="background:none;border:none;font-size:22px;cursor:pointer;display:none;" id="menuBtn">☰</button>
+        <span class="navbar-title"><%= title %></span>
+      </div>
+      <div class="navbar-right">
+        <a href="/profile" class="user-pill" style="text-decoration:none;color:inherit;">
+          <div class="user-avatar">
+            <% if (session.profilePicture) { %>
+              <img src="/uploads/profiles/<%= session.profilePicture %>" alt="avatar" />
+            <% } else { %>
+              <%= session.userName ? session.userName.charAt(0).toUpperCase() : 'U' %>
+            <% } %>
+          </div>
+          <div>
+            <div class="user-name"><%= session.userName || 'User' %></div>
+            <div class="user-role"><%= session.role || 'user' %></div>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT STARTS -->
+    <main class="page-content">
+
+      <!-- Flash Messages -->
+      <% if (success && success.length > 0) { %>
+        <div class="alert alert-success">✅ <%= success[0] %></div>
+      <% } %>
+      <% if (error && error.length > 0) { %>
+        <div class="alert alert-error">❌ <%= error[0] %></div>
+      <% } %>

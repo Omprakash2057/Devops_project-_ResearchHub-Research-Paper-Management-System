@@ -1,0 +1,9 @@
+<%- include('../layout-top') %>
+<h1>Edit Paper</h1>
+<form action="/papers/<%= id %>" method="POST">
+    <input type="text" name="title" placeholder="Title" required>
+    <input type="text" name="author" placeholder="Author" required>
+    <textarea name="content" placeholder="Content"></textarea>
+    <button type="submit">Update</button>
+</form>
+<%- include('../layout-bottom') %>

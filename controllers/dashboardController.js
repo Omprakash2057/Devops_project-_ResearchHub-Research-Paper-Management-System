@@ -1,0 +1,4 @@
+// Dashboard controller
+exports.index = (req, res) => {
+  res.render('dashboard/index');
+};

@@ -1,0 +1,8 @@
+<%- include('../layout-top') %>
+<h1>Edit User</h1>
+<form action="/users/<%= id %>" method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Update</button>
+</form>
+<%- include('../layout-bottom') %>

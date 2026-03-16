@@ -1,0 +1,102 @@
+<% locals.activePage = 'profile' %>
+<%- include('../layout-top') %>
+
+<div class="page-header">
+  <div><h1>Profile Settings</h1><p>Manage your account information</p></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+
+  <!-- Edit Profile -->
+  <div class="card">
+    <div class="profile-header">
+      <div class="profile-avatar-lg">
+        <% if (profileUser.profilePicture) { %>
+          <img src="/uploads/profiles/<%= profileUser.profilePicture %>" alt="Profile" />
+        <% } else { %>
+          <%= profileUser.name.charAt(0).toUpperCase() %>
+        <% } %>
+      </div>
+      <div class="profile-info">
+        <h2><%= profileUser.name %></h2>
+        <p><%= profileUser.email %></p>
+        <span class="badge <%= profileUser.role === 'admin' ? 'badge-danger' : 'badge-success' %>" style="margin-top:6px;">
+          <%= profileUser.role %>
+        </span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">✏️ Edit Profile</h3>
+      <form action="/profile/update" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" value="<%= profileUser.name %>" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-control" value="<%= profileUser.email %>" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Profile Picture</label>
+          <input type="file" name="profilePicture" class="form-control" accept="image/*" />
+          <div class="form-hint">JPG, PNG, GIF, WEBP. Max 5 MB.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px;">
+
+    <!-- Change Password -->
+    <div class="card">
+      <div class="card-header"><h3>🔒 Change Password</h3></div>
+      <div class="card-body">
+        <form action="/profile/change-password" method="POST">
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" name="currentPassword" class="form-control" placeholder="••••••••" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" name="newPassword" class="form-control" placeholder="Min 6 characters" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" name="confirmNewPassword" class="form-control" placeholder="Repeat new password" required />
+          </div>
+          <button type="submit" class="btn btn-warning">🔐 Change Password</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Account Stats -->
+    <div class="card">
+      <div class="card-header"><h3>📊 Account Stats</h3></div>
+      <div class="card-body">
+        <table style="font-size:13px;width:100%;">
+          <tr>
+            <td style="color:#64748b;padding:7px 0;">Papers Uploaded</td>
+            <td style="padding:7px 0;font-weight:600;"><%= profileUser.papersUploaded || 0 %></td>
+          </tr>
+          <tr>
+            <td style="color:#64748b;padding:7px 0;">Account Role</td>
+            <td style="padding:7px 0;"><span class="badge <%= profileUser.role === 'admin' ? 'badge-danger' : 'badge-success' %>"><%= profileUser.role %></span></td>
+          </tr>
+          <tr>
+            <td style="color:#64748b;padding:7px 0;">Last Login</td>
+            <td style="padding:7px 0;"><%= profileUser.lastLogin ? new Date(profileUser.lastLogin).toLocaleString() : 'N/A' %></td>
+          </tr>
+          <tr>
+            <td style="color:#64748b;padding:7px 0;">Member Since</td>
+            <td style="padding:7px 0;"><%= new Date(profileUser.createdAt).toLocaleDateString() %></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('../layout-bottom') %>
